@@ -1,10 +1,9 @@
 
-use std::fs::metadata;
+use std::fs::{ metadata, create_dir_all };
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use serde::{ Serialize, Deserialize };
 use serde_json;
-
 use crate::utils;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -20,10 +19,20 @@ struct MemoData {
 }
 
 #[tauri::command]
-pub fn get_memo_by_day (offset: i32) -> String {
+pub fn get_memo_by_day (offset: i32, app_handle: tauri::AppHandle) -> String {
   let date = utils::date::get_date(offset);
 
-  let file_path = format!("{}{}{}", "../.data/", date, ".json");
+  let file_name = format!("{}{}", date, ".json");
+
+  let mut file_path = app_handle.path_resolver().app_dir().unwrap();
+
+  file_path.push("data");
+
+  if !file_path.exists() {
+    create_dir_all(&file_path).unwrap();
+  }
+
+  file_path.push(&file_name);
 
   let mut file = match OpenOptions::new()
     .read(true)
@@ -52,8 +61,19 @@ pub fn get_memo_by_day (offset: i32) -> String {
 }
 
 #[tauri::command]
-pub fn set_memo (date: &str, content: &str) -> bool {
-  let file_path = format!("{}{}{}", "../.data/", date, ".json");
+pub fn set_memo (date: &str, content: &str, app_handle: tauri::AppHandle) -> bool {
+
+  let file_name = format!("{}{}", date, ".json");
+
+  let mut file_path = app_handle.path_resolver().app_dir().unwrap();
+
+  file_path.push("data");
+
+  if !file_path.exists() {
+    create_dir_all(&file_path).unwrap();
+  }
+
+  file_path.push(&file_name);
 
   let mut file = match OpenOptions::new()
     .read(true)
