@@ -39,11 +39,16 @@
     "windows": [
       {
         "fullscreen": false,
+        "x": -1,
+        "y": 0,
         "resizable": true,
         "title": "side-memo",
-        "width": 800,
-        "height": 600
+        "width": 400,
+        "height": 1500,
+        "titleBarStyle": "Transparent",
+        "transparent": true
       }
-    ]
+    ],
+    "macOSPrivateApi": true
   }
 }
